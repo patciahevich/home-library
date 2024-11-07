@@ -10,6 +10,9 @@ import {
   HttpException,
   HttpStatus,
   UseGuards,
+  Res,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { TrackService } from './track.service';
 import { CreateTrackDto } from './dto/create-track.dto';
@@ -36,6 +39,7 @@ export class TrackController {
   }
 
   @Post()
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async createTrack(@Body() createTrackDto: CreateTrackDto) {
     if (!createTrackDto.name || createTrackDto.duration === undefined) {
       throw new HttpException(
@@ -48,6 +52,7 @@ export class TrackController {
 
   @Put(':id')
   @UseGuards(UuidGuard)
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async updateTrack(
     @Param('id') id: string,
     @Body() updateTrackDto: UpdateTrackDto,
@@ -61,11 +66,11 @@ export class TrackController {
 
   @Delete(':id')
   @UseGuards(UuidGuard)
-  async deleteTrack(@Param('id') id: string) {
+  async deleteTrack(@Param('id') id: string, @Res() res) {
     const isDeleted = await this.trackService.delete(id);
     if (!isDeleted) {
       throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
     }
-    return { status: 204, message: 'Track deleted successfully' };
+    return res.status(204).json({ message: 'Track deleted successfully' });
   }
 }
