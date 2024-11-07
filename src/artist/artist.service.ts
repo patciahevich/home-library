@@ -1,38 +1,27 @@
 import { Injectable } from '@nestjs/common';
-import { Artist } from './artist.interface';
-import { v4 as uuid } from 'uuid';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { CreateArtistDto } from './dto/create-artist.dto';
+import { DatabaseService } from 'src/database/database.service';
 
 @Injectable()
 export class ArtistService {
-  private artists = new Map<string, Artist>();
-
-  findAll(): Artist[] {
-    return Array.from(this.artists.values());
+  constructor(private readonly databaseService: DatabaseService) {}
+  findAll() {
+    return this.databaseService.findAllArtists();
   }
 
-  findById(id: string): Artist | null {
-    return this.artists.get(id) || null;
+  findById(id: string) {
+    return this.databaseService.findArtistById(id);
+  }
+  create(artistData: CreateArtistDto) {
+    return this.databaseService.createArtist(artistData);
   }
 
-  create(artistData: CreateArtistDto): Artist {
-    const id = uuid();
-    const newArtist = { id, ...artistData };
-    this.artists.set(id, newArtist);
-    return newArtist;
+  update(id: string, updateArtistDto: UpdateArtistDto) {
+    return this.databaseService.updateArtist(id, updateArtistDto);
   }
 
-  update(id: string, updateArtistDto: UpdateArtistDto): Artist | null {
-    const artist = this.artists.get(id);
-    if (!artist) return null;
-
-    const updatedArtist = { ...artist, ...updateArtistDto };
-    this.artists.set(id, updatedArtist);
-    return updatedArtist;
-  }
-
-  delete(id: string): boolean {
-    return this.artists.delete(id);
+  delete(id: string) {
+    return this.databaseService.deleteArtist(id);
   }
 }

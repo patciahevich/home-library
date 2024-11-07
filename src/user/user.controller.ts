@@ -22,14 +22,14 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  async getAllUsers() {
-    return this.userService.findAll();
+  getAllUsers() {
+    return this.userService.getAll();
   }
 
   @Get(':id')
   @UseGuards(UuidGuard)
-  async getUserById(@Param('id') id: string) {
-    const user = await this.userService.findById(id);
+  getUserById(@Param('id') id: string) {
+    const user = this.userService.getById(id);
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
@@ -37,27 +37,24 @@ export class UserController {
   }
 
   @Post()
-  async createUser(@Body() createUserDto: CreateUserDto) {
+  createUser(@Body() createUserDto: CreateUserDto) {
     if (!createUserDto.login || !createUserDto.password) {
       throw new HttpException(
         'Missing required fields',
         HttpStatus.BAD_REQUEST,
       );
     }
-    const newUser = await this.userService.create(createUserDto);
+    const newUser = this.userService.create(createUserDto);
     return { statusCode: HttpStatus.CREATED, data: newUser };
   }
 
   @Put(':id')
   @UseGuards(UuidGuard)
-  async updateUserPassword(
+  updateUserPassword(
     @Param('id') id: string,
     @Body() updatePasswordDto: UpdatePasswordDto,
   ) {
-    const updatedUser = await this.userService.updatePassword(
-      id,
-      updatePasswordDto,
-    );
+    const updatedUser = this.userService.updatePassword(id, updatePasswordDto);
     if (!updatedUser) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
@@ -66,8 +63,8 @@ export class UserController {
 
   @Delete(':id')
   @UseGuards(UuidGuard)
-  async deleteUser(@Param('id') id: string) {
-    await this.userService.delete(id);
+  deleteUser(@Param('id') id: string) {
+    this.userService.delete(id);
     return { statusCode: HttpStatus.NO_CONTENT };
   }
 }

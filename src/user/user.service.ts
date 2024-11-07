@@ -1,49 +1,29 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { DatabaseService } from '../database/database.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
-import { v4 as uuid } from 'uuid';
-import { User } from './user.interface';
 
 @Injectable()
 export class UserService {
-  private users = new Map<string, User>();
+  constructor(private readonly databaseService: DatabaseService) {}
 
-  findAll() {
-    return Array.from(this.users.values());
+  getAll() {
+    return this.databaseService.findAllUsers();
   }
 
-  findById(id: string) {
-    return this.users.get(id) || null;
+  getById(id: string) {
+    return this.databaseService.findUserById(id);
   }
 
   create(createUserDto: CreateUserDto) {
-    const id = uuid();
-    const createdAt = new Date().getTime();
-    const updatedAt = new Date().getTime();
-    const version = 1;
-    const newUser = { id, createdAt, updatedAt, version, ...createUserDto };
-    this.users.set(id, newUser);
-    return newUser;
+    return this.databaseService.createUser(createUserDto);
   }
 
-  async updatePassword(id: string, updatePasswordDto: UpdatePasswordDto) {
-    const user = this.users.get(id);
-    if (!user) return null;
-
-    if (user.password !== updatePasswordDto.oldPassword) {
-      throw new HttpException(
-        'Old password is incorrect',
-        HttpStatus.FORBIDDEN,
-      );
-    }
-
-    user.password = updatePasswordDto.newPassword;
-    user.updatedAt = new Date().getTime();
-    this.users.set(id, user);
-    return user;
+  updatePassword(id: string, updatePasswordDto: UpdatePasswordDto) {
+    return this.databaseService.updateUserPassword(id, updatePasswordDto);
   }
 
   delete(id: string) {
-    return this.users.delete(id);
+    this.databaseService.deleteUser(id);
   }
 }
