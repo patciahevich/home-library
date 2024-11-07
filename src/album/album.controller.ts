@@ -8,7 +8,10 @@ import {
   Param,
   Post,
   Put,
+  Res,
   UseGuards,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { AlbumService } from './album.service';
 import { UuidGuard } from 'src/utils/uuid.guard';
@@ -34,7 +37,8 @@ export class AlbumController {
   }
 
   @Post()
-  async createArtist(@Body() albumData: CreateAlbumDto) {
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+  createArtist(@Body() albumData: CreateAlbumDto) {
     if (!albumData.name || albumData.year === undefined) {
       throw new HttpException(
         'Name and year fields are required',
@@ -46,11 +50,9 @@ export class AlbumController {
 
   @Put(':id')
   @UseGuards(UuidGuard)
-  async updateAlbum(
-    @Param('id') id: string,
-    @Body() updateAlbumDto: UpdateAlbumDto,
-  ) {
-    const album = await this.albumService.update(id, updateAlbumDto);
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+  updateAlbum(@Param('id') id: string, @Body() updateAlbumDto: UpdateAlbumDto) {
+    const album = this.albumService.update(id, updateAlbumDto);
     if (!album) {
       throw new HttpException('Album not found', HttpStatus.NOT_FOUND);
     }
@@ -59,11 +61,12 @@ export class AlbumController {
 
   @Delete(':id')
   @UseGuards(UuidGuard)
-  async deleteAlbum(@Param('id') id: string) {
-    const isDeleted = await this.albumService.delete(id);
+  deleteAlbum(@Param('id') id: string, @Res() res) {
+    const isDeleted = this.albumService.delete(id);
     if (!isDeleted) {
       throw new HttpException('Album not found', HttpStatus.NOT_FOUND);
     }
-    return { status: 204, message: 'Album deleted successfully' };
+
+    return res.status(204).json({ message: 'Album deleted successfully' });
   }
 }
