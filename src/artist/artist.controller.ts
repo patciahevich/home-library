@@ -9,6 +9,9 @@ import {
   HttpException,
   HttpStatus,
   UseGuards,
+  Res,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { ArtistService } from './artist.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
@@ -35,6 +38,7 @@ export class ArtistController {
   }
 
   @Post()
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async createArtist(@Body() createArtistDto: CreateArtistDto) {
     if (!createArtistDto.name || createArtistDto.grammy === undefined) {
       throw new HttpException(
@@ -47,11 +51,12 @@ export class ArtistController {
 
   @Put(':id')
   @UseGuards(UuidGuard)
-  async updateArtist(
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+  updateArtist(
     @Param('id') id: string,
     @Body() updateArtistDto: UpdateArtistDto,
   ) {
-    const artist = await this.artistService.update(id, updateArtistDto);
+    const artist = this.artistService.update(id, updateArtistDto);
     if (!artist) {
       throw new HttpException('Artist not found', HttpStatus.NOT_FOUND);
     }
@@ -60,11 +65,11 @@ export class ArtistController {
 
   @Delete(':id')
   @UseGuards(UuidGuard)
-  async deleteArtist(@Param('id') id: string) {
+  async deleteArtist(@Param('id') id: string, @Res() res) {
     const isDeleted = await this.artistService.delete(id);
     if (!isDeleted) {
       throw new HttpException('Artist not found', HttpStatus.NOT_FOUND);
     }
-    return { status: 204, message: 'Artist deleted successfully' };
+    return res.status(204).json({ message: 'Artist deleted successfully' });
   }
 }
