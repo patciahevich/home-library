@@ -36,6 +36,17 @@ export class DatabaseService {
     };
   }
 
+  private validateId(id: string | undefined, type: 'artist' | 'album') {
+    if (!id) {
+      return null;
+    }
+    const isValid = this.database[type + 's'].has(id);
+    if (!isValid) {
+      throw new HttpException(`Invalid ${type} ID`, HttpStatus.BAD_REQUEST);
+    }
+    return id;
+  }
+
   findAllUsers() {
     return Array.from(this.database.users.values());
   }
@@ -81,16 +92,17 @@ export class DatabaseService {
   }
   createTrack(trackData: CreateTrackDto): Track {
     const id = uuid();
-    const artistId = trackData.artistId ?? null;
-    const albumId = trackData.albumId ?? null;
+    const artistId = this.validateId(trackData.artistId, 'artist');
+    const albumId = this.validateId(trackData.albumId, 'album');
     const newTrack = { id, albumId, artistId, ...trackData };
+
     this.database.tracks.set(id, newTrack);
     return newTrack;
   }
 
   createAlbum(albumData: CreateAlbumDto): Album {
     const id = uuid();
-    const artistId = albumData.artistId || null;
+    const artistId = this.validateId(albumData.artistId, 'artist');
     const album = { id, artistId, ...albumData };
     this.database.albums.set(id, album);
     return album;
@@ -142,12 +154,24 @@ export class DatabaseService {
     return this.database.users.delete(id);
   }
   deleteArtist(id: string): boolean {
+    this.database.albums.forEach((album) => {
+      if (album.artistId === id) album.artistId = null;
+    });
+    this.database.tracks.forEach((track) => {
+      if (track.artistId === id) track.artistId = null;
+    });
+    this.database.favoriteArtists.delete(id);
     return this.database.artists.delete(id);
   }
   deleteTrack(id: string): boolean {
+    this.database.favoriteTracks.delete(id);
     return this.database.tracks.delete(id);
   }
   deleteAlbum(id: string): boolean {
+    this.database.tracks.forEach((track) => {
+      if (track.albumId === id) track.albumId = null;
+    });
+    this.database.favoriteAlbums.delete(id);
     return this.database.albums.delete(id);
   }
 
