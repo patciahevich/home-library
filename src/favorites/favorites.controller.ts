@@ -5,6 +5,7 @@ import {
   Delete,
   Param,
   UseGuards,
+  Res,
 } from '@nestjs/common';
 import { FavoritesService } from './favorites.service';
 import { UuidGuard } from '../utils/uuid.guard';
@@ -27,9 +28,9 @@ export class FavoritesController {
 
   @Delete('track/:id')
   @UseGuards(UuidGuard)
-  removeTrackFromFavorites(@Param('id') id: string) {
+  removeTrackFromFavorites(@Param('id') id: string, @Res() res) {
     this.favoritesService.removeTrackFromFavorites(id);
-    return { status: 204, message: 'Track removed from favorites' };
+    return res.status(204).json({ message: 'Track removed from favorites' });
   }
 
   @Post('album/:id')
@@ -41,9 +42,9 @@ export class FavoritesController {
 
   @Delete('album/:id')
   @UseGuards(UuidGuard)
-  removeAlbumFromFavorites(@Param('id') id: string) {
+  removeAlbumFromFavorites(@Param('id') id: string, @Res() res) {
     this.favoritesService.removeAlbumFromFavorites(id);
-    return { status: 204, message: 'Album removed from favorites' };
+    return res.status(204).json({ message: 'Album removed from favorites' });
   }
 
   @Post('artist/:id')
@@ -55,8 +56,8 @@ export class FavoritesController {
 
   @Delete('artist/:id')
   @UseGuards(UuidGuard)
-  removeArtistFromFavorites(@Param('id') id: string) {
+  removeArtistFromFavorites(@Param('id') id: string, @Res() res) {
     this.favoritesService.removeArtistFromFavorites(id);
-    return { status: 204, message: 'Artist removed from favorites' };
+    return res.status(204).json({ message: 'Artist removed from favorites' });
   }
 }

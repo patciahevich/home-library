@@ -9,14 +9,17 @@ import {
   HttpStatus,
   HttpException,
   UseGuards,
+  Res,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { UuidGuard } from 'src/utils/uuid.guard';
-import { AuthGuard } from 'src/utils/auth.guard';
+// import { AuthGuard } from 'src/utils/auth.guard';
 
-@UseGuards(AuthGuard)
+// @UseGuards(AuthGuard)
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -37,6 +40,7 @@ export class UserController {
   }
 
   @Post()
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   createUser(@Body() createUserDto: CreateUserDto) {
     if (!createUserDto.login || !createUserDto.password) {
       throw new HttpException(
@@ -50,6 +54,7 @@ export class UserController {
 
   @Put(':id')
   @UseGuards(UuidGuard)
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   updateUserPassword(
     @Param('id') id: string,
     @Body() updatePasswordDto: UpdatePasswordDto,
@@ -63,8 +68,8 @@ export class UserController {
 
   @Delete(':id')
   @UseGuards(UuidGuard)
-  deleteUser(@Param('id') id: string) {
+  deleteUser(@Param('id') id: string, @Res() res) {
     this.userService.delete(id);
-    return { statusCode: HttpStatus.NO_CONTENT };
+    return res.status(204).json({ message: 'User deleted successfully' });
   }
 }
