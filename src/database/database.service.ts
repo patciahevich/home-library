@@ -47,8 +47,16 @@ export class DatabaseService {
     return id;
   }
 
+  private removePassword(user: User): Omit<User, 'password'> {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...userWithoutPassword } = user;
+    return userWithoutPassword;
+  }
+
   findAllUsers() {
-    return Array.from(this.database.users.values());
+    return Array.from(this.database.users.values()).map((user) =>
+      this.removePassword(user),
+    );
   }
 
   findAllArtists(): Artist[] {
@@ -62,7 +70,7 @@ export class DatabaseService {
   }
 
   findUserById(id: string) {
-    return this.database.users.get(id) || null;
+    return this.removePassword(this.database.users.get(id)) || null;
   }
   findArtistById(id: string): Artist | null {
     return this.database.artists.get(id) || null;
@@ -82,7 +90,7 @@ export class DatabaseService {
     const version = 1;
     const newUser = { id, createdAt, updatedAt, version, ...createUserDto };
     this.database.users.set(id, newUser);
-    return newUser;
+    return this.removePassword(newUser);
   }
   createArtist(artistData: CreateArtistDto): Artist {
     const id = uuid();
@@ -130,7 +138,7 @@ export class DatabaseService {
     user.password = updatePasswordDto.newPassword;
     user.updatedAt = new Date().getTime();
     this.database.users.set(id, user);
-    return user;
+    return this.removePassword(user);
   }
   updateTrack(id: string, updateTrackDto: UpdateTrackDto): Track | null {
     const track = this.database.tracks.get(id);
