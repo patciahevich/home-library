@@ -70,7 +70,9 @@ export class DatabaseService {
   }
 
   findUserById(id: string) {
-    return this.removePassword(this.database.users.get(id)) || null;
+    const user = this.database.users.get(id);
+
+    return user ? this.removePassword(user) : null;
   }
   findArtistById(id: string): Artist | null {
     return this.database.artists.get(id) || null;
@@ -137,6 +139,7 @@ export class DatabaseService {
 
     user.password = updatePasswordDto.newPassword;
     user.updatedAt = new Date().getTime();
+    user.version += 1;
     this.database.users.set(id, user);
     return this.removePassword(user);
   }

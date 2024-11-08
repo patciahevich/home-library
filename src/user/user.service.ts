@@ -24,6 +24,6 @@ export class UserService {
   }
 
   delete(id: string) {
-    this.databaseService.deleteUser(id);
+    return this.databaseService.deleteUser(id);
   }
 }

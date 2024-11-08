@@ -48,8 +48,7 @@ export class UserController {
         HttpStatus.BAD_REQUEST,
       );
     }
-    const newUser = this.userService.create(createUserDto);
-    return { statusCode: HttpStatus.CREATED, data: newUser };
+    return this.userService.create(createUserDto);
   }
 
   @Put(':id')
@@ -69,7 +68,12 @@ export class UserController {
   @Delete(':id')
   @UseGuards(UuidGuard)
   deleteUser(@Param('id') id: string, @Res() res) {
-    this.userService.delete(id);
+    const isDeleted = this.userService.delete(id);
+
+    if (!isDeleted) {
+      throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
+    }
+
     return res.status(204).json({ message: 'User deleted successfully' });
   }
 }
