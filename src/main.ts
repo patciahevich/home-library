@@ -15,7 +15,7 @@ async function bootstrap() {
     fs.readFileSync(path.resolve(__dirname, '../doc/api.yaml'), 'utf-8'),
   ) as OpenAPIObject;
 
-  SwaggerModule.setup('/docs', app, apiSpec);
+  SwaggerModule.setup('/doc', app, apiSpec);
 
   await app.listen(PORT);
 }
