@@ -19,11 +19,7 @@
 
 ## Installation
 
-1. Clone this repository:
-
-```
-git clone {repository URL}
-```
+1. Clone this repository.
 
 2. Install dependencies:
 
