@@ -24,8 +24,8 @@ export class TrackController {
   constructor(private readonly trackService: TrackService) {}
 
   @Get()
-  getAllTracks() {
-    return this.trackService.findAll();
+  async getAllTracks() {
+    return await this.trackService.findAll();
   }
 
   @Get(':id')
@@ -47,7 +47,7 @@ export class TrackController {
         HttpStatus.BAD_REQUEST,
       );
     }
-    return this.trackService.create(createTrackDto);
+    return await this.trackService.create(createTrackDto);
   }
 
   @Put(':id')
