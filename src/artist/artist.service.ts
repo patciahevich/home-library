@@ -1,27 +1,30 @@
 import { Injectable } from '@nestjs/common';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { CreateArtistDto } from './dto/create-artist.dto';
-import { DatabaseService } from 'src/database/database.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class ArtistService {
-  constructor(private readonly databaseService: DatabaseService) {}
-  findAll() {
-    return this.databaseService.findAllArtists();
+  constructor(private readonly prisma: PrismaService) {}
+  async findAll() {
+    return await this.prisma.artist.findMany();
   }
 
-  findById(id: string) {
-    return this.databaseService.findArtistById(id);
+  async findById(id: string) {
+    return await this.prisma.artist.findUnique({ where: { id } });
   }
-  create(artistData: CreateArtistDto) {
-    return this.databaseService.createArtist(artistData);
-  }
-
-  update(id: string, updateArtistDto: UpdateArtistDto) {
-    return this.databaseService.updateArtist(id, updateArtistDto);
+  async create(artistData: CreateArtistDto) {
+    return await this.prisma.artist.create({ data: artistData });
   }
 
-  delete(id: string) {
-    return this.databaseService.deleteArtist(id);
+  async update(id: string, updateArtistDto: UpdateArtistDto) {
+    return await this.prisma.artist.update({
+      where: { id },
+      data: updateArtistDto,
+    });
+  }
+
+  async delete(id: string) {
+    return await this.prisma.artist.delete({ where: { id } });
   }
 }
