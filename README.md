@@ -1,72 +1,39 @@
 # Home Library Service
 
-## Prerequisites
+## Overview
 
-- Git - [Download & Install Git](https://git-scm.com/downloads).
-- Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager.
+**Home Library Service** is a RESTful API application for managing a personal library, allowing users to create, read, update, and delete records of tracks, artists, albums, and related information. The application provides basic CRUD operations and offers functionalities such as associating artists with albums and tracks, managing user accounts, and maintaining a favorites list.
 
-## Downloading
+## Features
 
-```
-git clone {repository URL}
-```
+- **User Management**: Create, view, update, and delete user accounts.
+- **Artists, Albums, and Tracks**: Manage records for artists, albums, and tracks, with relationships between them (e.g., albums linked to artists).
+- **Favorites**: Add or remove artists, albums, and tracks from a favorites list.
+- **Reference Handling**: Automatically remove references in related entities when an item is deleted. For example, if an artist is deleted, the `artistId` field in related albums and tracks becomes `null`, and the artist is removed from favorites (if present).
 
-## Installing NPM modules
+## Requirements
+
+- _Node.js_
+- _NestJS_
+- _Database_: In-memory database
+
+## Installation
+
+1. Clone this repository.
+
+2. Install dependencies:
 
 ```
 npm install
 ```
 
-## Running application
+3. Configure environment variables by copying `.env.example` to `.env` and updating the values as needed.
+
+4. Start the application in development mode:
 
 ```
 npm start
 ```
 
-After starting the app on port (4000 as default) you can open
-in your browser OpenAPI documentation by typing http://localhost:4000/doc/.
+After starting the app on port (_4000_ as default) you can open in your browser OpenAPI documentation by typing **http://localhost:4000/doc/**.
 For more information about OpenAPI/Swagger please visit https://swagger.io/.
-
-## Testing
-
-After application running open new terminal and enter:
-
-To run all tests without authorization
-
-```
-npm run test
-```
-
-To run only one of all test suites
-
-```
-npm run test -- <path to suite>
-```
-
-To run all test with authorization
-
-```
-npm run test:auth
-```
-
-To run only specific test suite with authorization
-
-```
-npm run test:auth -- <path to suite>
-```
-
-### Auto-fix and format
-
-```
-npm run lint
-```
-
-```
-npm run format
-```
-
-### Debugging in VSCode
-
-Press <kbd>F5</kbd> to debug.
-
-For more information, visit: https://code.visualstudio.com/docs/editor/debugging
