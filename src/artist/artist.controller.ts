@@ -23,8 +23,8 @@ export class ArtistController {
   constructor(private readonly artistService: ArtistService) {}
 
   @Get()
-  getAllArtists() {
-    return this.artistService.findAll();
+  async getAllArtists() {
+    return await this.artistService.findAll();
   }
 
   @Get(':id')
@@ -46,17 +46,17 @@ export class ArtistController {
         HttpStatus.BAD_REQUEST,
       );
     }
-    return this.artistService.create(createArtistDto);
+    return await this.artistService.create(createArtistDto);
   }
 
   @Put(':id')
   @UseGuards(UuidGuard)
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
-  updateArtist(
+  async updateArtist(
     @Param('id') id: string,
     @Body() updateArtistDto: UpdateArtistDto,
   ) {
-    const artist = this.artistService.update(id, updateArtistDto);
+    const artist = await this.artistService.update(id, updateArtistDto);
     if (!artist) {
       throw new HttpException('Artist not found', HttpStatus.NOT_FOUND);
     }

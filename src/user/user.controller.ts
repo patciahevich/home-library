@@ -25,14 +25,14 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  getAllUsers() {
-    return this.userService.getAll();
+  async getAllUsers() {
+    return await this.userService.getAll();
   }
 
   @Get(':id')
   @UseGuards(UuidGuard)
-  getUserById(@Param('id') id: string) {
-    const user = this.userService.getById(id);
+  async getUserById(@Param('id') id: string) {
+    const user = await this.userService.getById(id);
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
@@ -41,24 +41,27 @@ export class UserController {
 
   @Post()
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
-  createUser(@Body() createUserDto: CreateUserDto) {
+  async createUser(@Body() createUserDto: CreateUserDto) {
     if (!createUserDto.login || !createUserDto.password) {
       throw new HttpException(
         'Missing required fields',
         HttpStatus.BAD_REQUEST,
       );
     }
-    return this.userService.create(createUserDto);
+    return await this.userService.create(createUserDto);
   }
 
   @Put(':id')
   @UseGuards(UuidGuard)
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
-  updateUserPassword(
+  async updateUserPassword(
     @Param('id') id: string,
     @Body() updatePasswordDto: UpdatePasswordDto,
   ) {
-    const updatedUser = this.userService.updatePassword(id, updatePasswordDto);
+    const updatedUser = await this.userService.updatePassword(
+      id,
+      updatePasswordDto,
+    );
     if (!updatedUser) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
@@ -67,8 +70,8 @@ export class UserController {
 
   @Delete(':id')
   @UseGuards(UuidGuard)
-  deleteUser(@Param('id') id: string, @Res() res) {
-    const isDeleted = this.userService.delete(id);
+  async deleteUser(@Param('id') id: string, @Res() res) {
+    const isDeleted = await this.userService.delete(id);
 
     if (!isDeleted) {
       throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
