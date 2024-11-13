@@ -36,7 +36,12 @@ export class UserController {
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
-    return user;
+
+    return {
+      ...user,
+      createdAt: user.createdAt.getTime(),
+      updatedAt: user.updatedAt.getTime(),
+    };
   }
 
   @Post()
@@ -48,7 +53,12 @@ export class UserController {
         HttpStatus.BAD_REQUEST,
       );
     }
-    return await this.userService.create(createUserDto);
+    const user = await this.userService.create(createUserDto);
+    return {
+      ...user,
+      createdAt: user.createdAt.getTime(),
+      updatedAt: user.updatedAt.getTime(),
+    };
   }
 
   @Put(':id')
@@ -58,14 +68,16 @@ export class UserController {
     @Param('id') id: string,
     @Body() updatePasswordDto: UpdatePasswordDto,
   ) {
-    const updatedUser = await this.userService.updatePassword(
-      id,
-      updatePasswordDto,
-    );
-    if (!updatedUser) {
+    const user = await this.userService.updatePassword(id, updatePasswordDto);
+    if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
-    return updatedUser;
+
+    return {
+      ...user,
+      createdAt: user.createdAt.getTime(),
+      updatedAt: user.updatedAt.getTime(),
+    };
   }
 
   @Delete(':id')
@@ -73,10 +85,10 @@ export class UserController {
   async deleteUser(@Param('id') id: string, @Res() res) {
     const isDeleted = await this.userService.delete(id);
 
-    if (!isDeleted) {
-      throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
+    if (isDeleted) {
+      return res.status(204).json({ message: 'User deleted successfully' });
     }
 
-    return res.status(204).json({ message: 'User deleted successfully' });
+    throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
   }
 }
