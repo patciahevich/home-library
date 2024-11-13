@@ -6,6 +6,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 @Injectable()
 export class ArtistService {
   constructor(private readonly prisma: PrismaService) {}
+
   async findAll() {
     return await this.prisma.artist.findMany();
   }
@@ -18,6 +19,12 @@ export class ArtistService {
   }
 
   async update(id: string, updateArtistDto: UpdateArtistDto) {
+    const artist = await this.findById(id);
+
+    if (!artist) {
+      return null;
+    }
+
     return await this.prisma.artist.update({
       where: { id },
       data: updateArtistDto,
@@ -25,6 +32,12 @@ export class ArtistService {
   }
 
   async delete(id: string) {
+    const artist = await this.findById(id);
+
+    if (!artist) {
+      return null;
+    }
+
     return await this.prisma.artist.delete({ where: { id } });
   }
 }
