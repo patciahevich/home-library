@@ -6,6 +6,8 @@ import {
   Param,
   UseGuards,
   Res,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { FavoritesService } from './favorites.service';
 import { UuidGuard } from '../utils/uuid.guard';
@@ -22,7 +24,13 @@ export class FavoritesController {
   @Post('track/:id')
   @UseGuards(UuidGuard)
   async addTrackToFavorites(@Param('id') id: string) {
-    await this.favoritesService.addTrackToFavorites(id);
+    const track = await this.favoritesService.addTrackToFavorites(id);
+    if (!track) {
+      throw new HttpException(
+        'Track not found',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
     return { status: 201, message: 'Track added to favorites' };
   }
 
@@ -36,7 +44,13 @@ export class FavoritesController {
   @Post('album/:id')
   @UseGuards(UuidGuard)
   async addAlbumToFavorites(@Param('id') id: string) {
-    await this.favoritesService.addAlbumToFavorites(id);
+    const album = await this.favoritesService.addAlbumToFavorites(id);
+    if (!album) {
+      throw new HttpException(
+        'Album not found',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
     return { status: 201, message: 'Album added to favorites' };
   }
 
@@ -50,7 +64,13 @@ export class FavoritesController {
   @Post('artist/:id')
   @UseGuards(UuidGuard)
   async addArtistToFavorites(@Param('id') id: string) {
-    await this.favoritesService.addArtistToFavorites(id);
+    const artist = await this.favoritesService.addArtistToFavorites(id);
+    if (!artist) {
+      throw new HttpException(
+        'Artist not found',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
     return { status: 201, message: 'Artist added to favorites' };
   }
 
