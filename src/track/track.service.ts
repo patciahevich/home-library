@@ -16,12 +16,24 @@ export class TrackService {
     return await this.prisma.track.create({ data: trackData });
   }
   async update(id: string, updateTrackDto: UpdateTrackDto) {
+    const track = await this.findById(id);
+
+    if (!track) {
+      return;
+    }
+
     return await this.prisma.track.update({
       where: { id },
       data: updateTrackDto,
     });
   }
   async delete(id: string) {
+    const track = await this.findById(id);
+
+    if (!track) {
+      return;
+    }
+
     return await this.prisma.track.delete({ where: { id } });
   }
 }
