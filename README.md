@@ -27,13 +27,28 @@
 npm install
 ```
 
+or (if it's needed)
+
+```
+npm install --legacy-peer-deps
+```
+
 3. Configure environment variables by copying `.env.example` to `.env` and updating the values as needed.
 
-4. Start the application in development mode:
+4. Apply pending migrations:
+
+```
+npx prisma migrate deploy
+```
+
+5. Start the application in development mode:
 
 ```
 npm start
+
 ```
 
 After starting the app on port (_4000_ as default) you can open in your browser OpenAPI documentation by typing **http://localhost:4000/doc/**.
 For more information about OpenAPI/Swagger please visit https://swagger.io/.
+
+The command `npx prisma studio` opens **Prisma Studio**, a powerful, web-based GUI for managing and exploring your database.
