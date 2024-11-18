@@ -48,6 +48,28 @@ npm start
 
 ```
 
+## How to work with Docker
+
+**Important note** : For work with [Docker](https://app.docker.com/) you should install this app to your local machine.
+
+1. Build the Docker image:
+
+```
+docker-compose build
+```
+
+2. After the image has been created you can run in with the command:
+
+```
+docker-compose run
+```
+
+3. You can also see all your images and the necessary information ( name, ID, size) using :
+
+```
+docker images
+```
+
 After starting the app on port (_4000_ as default) you can open in your browser OpenAPI documentation by typing **http://localhost:4000/doc/**.
 For more information about OpenAPI/Swagger please visit https://swagger.io/.
 
