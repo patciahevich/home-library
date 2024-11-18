@@ -27,13 +27,62 @@
 npm install
 ```
 
+or (if it's needed)
+
+```
+npm install --legacy-peer-deps
+```
+
 3. Configure environment variables by copying `.env.example` to `.env` and updating the values as needed.
 
-4. Start the application in development mode:
+4. Open your Postgres service (using pgAdmin or by with the terminal)
+
+5. Apply pending migrations:
+
+```
+npx prisma migrate deploy
+```
+
+6. Start the application in development mode:
 
 ```
 npm start
+
 ```
+
+## How to work with Docker
+
+**Important note** : For work with [Docker](https://app.docker.com/) you should install this app on your local machine.
+
+1. Build the Docker image:
+
+```
+docker-compose build
+```
+
+2. After the image has been created you can run in with the command:
+
+```
+docker-compose run
+```
+
+3. You can also see all your images and the necessary information ( name, ID, size) using :
+
+```
+docker images
+```
+
+## Another way to open the app and use it
+
+1.  Use the command to pull the [project](https://hub.docker.com/r/volhapatsiahevich/library_service) from DockerHub and run it
+
+```
+docker pull volhapatsiahevich/library_service
+```
+
+## Using the app
 
 After starting the app on port (_4000_ as default) you can open in your browser OpenAPI documentation by typing **http://localhost:4000/doc/**.
 For more information about OpenAPI/Swagger please visit https://swagger.io/.
+
+The command `npx prisma studio` opens **Prisma Studio**, a powerful, web-based GUI for managing and exploring your database.

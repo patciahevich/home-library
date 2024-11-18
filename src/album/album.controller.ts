@@ -22,8 +22,8 @@ import { UpdateAlbumDto } from './dto/update-album.dto';
 export class AlbumController {
   constructor(private readonly albumService: AlbumService) {}
   @Get()
-  getAllAlbums() {
-    return this.albumService.findAll();
+  async getAllAlbums() {
+    return await this.albumService.findAll();
   }
 
   @Get(':id')
@@ -38,21 +38,24 @@ export class AlbumController {
 
   @Post()
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
-  createArtist(@Body() albumData: CreateAlbumDto) {
+  async createArtist(@Body() albumData: CreateAlbumDto) {
     if (!albumData.name || albumData.year === undefined) {
       throw new HttpException(
         'Name and year fields are required',
         HttpStatus.BAD_REQUEST,
       );
     }
-    return this.albumService.create(albumData);
+    return await this.albumService.create(albumData);
   }
 
   @Put(':id')
   @UseGuards(UuidGuard)
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
-  updateAlbum(@Param('id') id: string, @Body() updateAlbumDto: UpdateAlbumDto) {
-    const album = this.albumService.update(id, updateAlbumDto);
+  async updateAlbum(
+    @Param('id') id: string,
+    @Body() updateAlbumDto: UpdateAlbumDto,
+  ) {
+    const album = await this.albumService.update(id, updateAlbumDto);
     if (!album) {
       throw new HttpException('Album not found', HttpStatus.NOT_FOUND);
     }
@@ -61,8 +64,8 @@ export class AlbumController {
 
   @Delete(':id')
   @UseGuards(UuidGuard)
-  deleteAlbum(@Param('id') id: string, @Res() res) {
-    const isDeleted = this.albumService.delete(id);
+  async deleteAlbum(@Param('id') id: string, @Res() res) {
+    const isDeleted = await this.albumService.delete(id);
     if (!isDeleted) {
       throw new HttpException('Album not found', HttpStatus.NOT_FOUND);
     }

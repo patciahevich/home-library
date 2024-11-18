@@ -1,29 +1,86 @@
-import { Injectable } from '@nestjs/common';
-import { DatabaseService } from '../database/database.service';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  getAll() {
-    return this.databaseService.findAllUsers();
+  async getAll() {
+    return await this.prisma.user.findMany({
+      select: {
+        id: true,
+        login: true,
+        version: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
   }
 
-  getById(id: string) {
-    return this.databaseService.findUserById(id);
+  async getById(id: string) {
+    return await this.prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        login: true,
+        version: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
   }
 
-  create(createUserDto: CreateUserDto) {
-    return this.databaseService.createUser(createUserDto);
+  async create(createUserDto: CreateUserDto) {
+    return await this.prisma.user.create({
+      data: createUserDto,
+      select: {
+        id: true,
+        login: true,
+        version: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
   }
 
-  updatePassword(id: string, updatePasswordDto: UpdatePasswordDto) {
-    return this.databaseService.updateUserPassword(id, updatePasswordDto);
+  async updatePassword(id: string, updatePasswordDto: UpdatePasswordDto) {
+    const user = await this.prisma.user.findUnique({ where: { id } });
+
+    if (!user) {
+      return;
+    }
+    if (user.password === updatePasswordDto.oldPassword) {
+      return await this.prisma.user.update({
+        where: { id },
+        data: {
+          password: updatePasswordDto.newPassword,
+          version: { increment: 1 },
+        },
+        select: {
+          id: true,
+          login: true,
+          version: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      });
+    } else {
+      throw new HttpException(
+        'Old password is incorrect',
+        HttpStatus.FORBIDDEN,
+      );
+    }
   }
 
-  delete(id: string) {
-    return this.databaseService.deleteUser(id);
+  async delete(id: string) {
+    const user = await this.getById(id);
+
+    if (user) {
+      return await this.prisma.user.delete({ where: { id } });
+    } else {
+      return null;
+    }
   }
 }
