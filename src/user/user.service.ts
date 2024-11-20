@@ -1,7 +1,18 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+
+const saltRounds = 10;
+
+function hashPassword(password: string) {
+  return bcrypt.hash(password, saltRounds);
+}
+
+function comparePassword(password, hash) {
+  return bcrypt.compareSync(password, hash);
+}
 
 @Injectable()
 export class UserService {
@@ -33,8 +44,10 @@ export class UserService {
   }
 
   async create(createUserDto: CreateUserDto) {
+    const hash = await hashPassword(createUserDto.password);
+    console.log(hash);
     return await this.prisma.user.create({
-      data: createUserDto,
+      data: { ...createUserDto, password: hash },
       select: {
         id: true,
         login: true,
@@ -51,7 +64,12 @@ export class UserService {
     if (!user) {
       return;
     }
-    if (user.password === updatePasswordDto.oldPassword) {
+
+    const isCompare = comparePassword(
+      updatePasswordDto.oldPassword,
+      user.password,
+    );
+    if (isCompare) {
       return await this.prisma.user.update({
         where: { id },
         data: {
