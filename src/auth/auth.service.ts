@@ -4,6 +4,7 @@ import { User } from '@prisma/client';
 import * as jwt from 'jsonwebtoken';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
+import { comparePassword } from 'src/utils/hash';
 
 @Injectable()
 export class AuthService {
@@ -17,7 +18,7 @@ export class AuthService {
   }
 
   async loginUser(user: User, loginData: CreateUserDto) {
-    const isLogin = user.password === loginData.password;
+    const isLogin = comparePassword(loginData.password, user.password);
 
     if (!isLogin) {
       return;
