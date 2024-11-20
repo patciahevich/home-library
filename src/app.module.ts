@@ -8,6 +8,7 @@ import { AlbumModule } from './album/album.module';
 import { favoritesModule } from './favorites/favorites.module';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from './prisma/prisma.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { PrismaModule } from './prisma/prisma.module';
     AlbumModule,
     favoritesModule,
     PrismaModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
