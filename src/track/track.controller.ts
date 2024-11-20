@@ -17,8 +17,8 @@ import {
 import { TrackService } from './track.service';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
-import { UuidGuard } from '../utils/uuid.guard';
-import { AuthGuard } from 'src/utils/auth.guard';
+import { UuidGuard } from '../guards/uuid.guard';
+import { AuthGuard } from 'src/guards/auth.guard';
 
 @UseGuards(AuthGuard)
 @Controller('track')

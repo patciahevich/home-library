@@ -14,10 +14,10 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { AlbumService } from './album.service';
-import { UuidGuard } from 'src/utils/uuid.guard';
+import { UuidGuard } from 'src/guards/uuid.guard';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
-import { AuthGuard } from 'src/utils/auth.guard';
+import { AuthGuard } from 'src/guards/auth.guard';
 
 @UseGuards(AuthGuard)
 @Controller('album')

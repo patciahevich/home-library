@@ -16,8 +16,8 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
-import { UuidGuard } from 'src/utils/uuid.guard';
-import { AuthGuard } from 'src/utils/auth.guard';
+import { UuidGuard } from 'src/guards/uuid.guard';
+import { AuthGuard } from 'src/guards/auth.guard';
 
 @UseGuards(AuthGuard)
 @Controller('user')

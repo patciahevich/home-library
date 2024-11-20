@@ -10,8 +10,8 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { FavoritesService } from './favorites.service';
-import { UuidGuard } from '../utils/uuid.guard';
-import { AuthGuard } from 'src/utils/auth.guard';
+import { UuidGuard } from '../guards/uuid.guard';
+import { AuthGuard } from 'src/guards/auth.guard';
 
 @UseGuards(AuthGuard)
 @Controller('favs')
