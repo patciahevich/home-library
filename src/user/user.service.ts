@@ -34,6 +34,13 @@ export class UserService {
   }
 
   async create(createUserDto: CreateUserDto) {
+    const user = this.prisma.user.findFirst({
+      where: { login: createUserDto.login },
+    });
+
+    if (user) {
+      return;
+    }
     const hash = await hashPassword(createUserDto.password);
     return await this.prisma.user.create({
       data: { ...createUserDto, password: hash },

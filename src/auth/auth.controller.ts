@@ -22,6 +22,11 @@ export class AuthController {
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async createUser(@Body() createUserDto: CreateUserDto) {
     const user = await this.userService.create(createUserDto);
+
+    if (!user) {
+      throw new HttpException('This login is reserved', HttpStatus.CONFLICT);
+    }
+
     return {
       ...user,
       createdAt: user.createdAt.getTime(),
