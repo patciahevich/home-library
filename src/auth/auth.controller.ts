@@ -47,6 +47,23 @@ export class AuthController {
       );
     }
 
-    return { accessToken: loginResponse };
+    return { ...loginResponse };
+  }
+
+  @Post('/refresh')
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+  async refreshToken(@Body() body: { token: string }) {
+    const userData = this.authService.validateToken(body.token);
+
+    if (!userData) {
+      throw new HttpException('This token is invalid', HttpStatus.UNAUTHORIZED);
+    }
+
+    const accessToken = this.authService.generateAccessToken(
+      userData.id,
+      userData.login,
+    );
+
+    return { accessToken };
   }
 }
