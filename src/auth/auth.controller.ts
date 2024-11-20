@@ -47,6 +47,6 @@ export class AuthController {
       );
     }
 
-    return { token: loginResponse };
+    return { accessToken: loginResponse };
   }
 }
