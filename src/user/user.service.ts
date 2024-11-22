@@ -34,7 +34,7 @@ export class UserService {
   }
 
   async create(createUserDto: CreateUserDto) {
-    const user = this.prisma.user.findFirst({
+    const user = await this.prisma.user.findFirst({
       where: { login: createUserDto.login },
     });
 

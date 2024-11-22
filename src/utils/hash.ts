@@ -1,6 +1,6 @@
 import * as bcrypt from 'bcrypt';
 
-const saltRounds = 10;
+const saltRounds = +process.env.CRYPT_SALT || 10;
 
 export function comparePassword(password: string, hash: string) {
   return bcrypt.compareSync(password, hash);

@@ -7,7 +7,7 @@ import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { comparePassword } from 'src/utils/hash';
 
 interface JwtPayload {
-  id: string;
+  userId: string;
   login: string;
 }
 
@@ -29,24 +29,32 @@ export class AuthService {
       return;
     }
 
+    const { id, login } = user;
+
+    return this.getTokens({ userId: id, login });
+  }
+
+  getTokens(payload: JwtPayload) {
+    const { userId, login, ...rest } = payload;
+
+    if ('exp' in rest) {
+      delete rest.exp;
+    }
+
     return {
-      accessToken: this.generateAccessToken(user.id, user.login),
-      refreshToken: this.generateRefreshToken(user.id, user.login),
+      accessToken: this.generateAccessToken({ userId, login }),
+      refreshToken: this.generateRefreshToken({ userId, login }),
     };
   }
 
-  generateAccessToken(id: string, login: string) {
-    const payload = { id, login };
-
+  generateAccessToken(payload: JwtPayload) {
     const secret = this.configService.get('JWT_SECRET_KEY');
     const expiresIn = this.configService.get('TOKEN_EXPIRE_TIME');
 
     return jwt.sign(payload, secret, { expiresIn });
   }
 
-  generateRefreshToken(id: string, login: string) {
-    const payload = { id, login };
-
+  generateRefreshToken(payload: JwtPayload) {
     const secret = this.configService.get('JWT_SECRET_REFRESH_KEY');
     const expiresIn = this.configService.get('TOKEN_REFRESH_EXPIRE_TIME');
 
@@ -55,6 +63,11 @@ export class AuthService {
 
   validateToken(token: string) {
     const secret = this.configService.get('JWT_SECRET_REFRESH_KEY');
-    return jwt.verify(token, secret) as JwtPayload;
+
+    try {
+      return jwt.verify(token, secret) as JwtPayload;
+    } catch {
+      return null;
+    }
   }
 }

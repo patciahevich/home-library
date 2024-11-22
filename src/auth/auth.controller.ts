@@ -4,6 +4,7 @@ import {
   HttpException,
   HttpStatus,
   Post,
+  Res,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -57,18 +58,21 @@ export class AuthController {
 
   @Post('/refresh')
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
-  async refreshToken(@Body() body: { token: string }) {
-    const userData = this.authService.validateToken(body.token);
+  async refreshToken(@Body() body: { refreshToken: string }, @Res() res) {
+    if (!body.refreshToken) {
+      throw new HttpException(
+        'The token is not provided',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+    const userData = this.authService.validateToken(body.refreshToken);
 
     if (!userData) {
-      throw new HttpException('This token is invalid', HttpStatus.UNAUTHORIZED);
+      throw new HttpException('This token is invalid', HttpStatus.FORBIDDEN);
     }
 
-    const accessToken = this.authService.generateAccessToken(
-      userData.id,
-      userData.login,
-    );
+    const tokens = this.authService.getTokens(userData);
 
-    return { accessToken };
+    return res.status(200).json({ ...tokens });
   }
 }
