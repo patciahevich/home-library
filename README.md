@@ -88,3 +88,5 @@ After starting the app on port (_4000_ as default) you can open in your browser 
 For more information about OpenAPI/Swagger please visit https://swagger.io/.
 
 The command `npx prisma studio` opens **Prisma Studio**, a powerful, web-based GUI for managing and exploring your database.
+
+# The logs are saved in the folder `nodejs2024Q3-service/dist/logs`
