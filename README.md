@@ -50,6 +50,8 @@ npm start
 
 ```
 
+N.B. if you don't want to run the APP with Docker and want to use local DB please change `POSTGRES_HOST` to `localhost` in your .env file.
+
 ## How to work with Docker
 
 **Important note** : For work with [Docker](https://app.docker.com/) you should install this app on your local machine.
