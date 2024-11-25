@@ -24,6 +24,11 @@ import { AuthGuard } from 'src/guards/auth.guard';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @Get('error')
+  throwError(): void {
+    throw new HttpException('This is a custom error', HttpStatus.BAD_REQUEST);
+  }
+
   @Get()
   async getAllUsers() {
     return await this.userService.getAll();
